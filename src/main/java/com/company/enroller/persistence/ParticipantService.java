@@ -2,6 +2,7 @@ package com.company.enroller.persistence;
 
 import com.company.enroller.model.Participant;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +17,23 @@ public class ParticipantService {
 		connector = DatabaseConnector.getInstance();
 	}
 
-	public Collection<Participant> getAll() {
-		return connector.getSession().createCriteria(Participant.class).list();
+	public Collection<Participant> getAll(String sortBy, String sortOrder, String key) {
+
+		String hql = "from Participant";
+		if (!key.isEmpty()){
+			hql+=" WHERE login LIKE '%"+key+"%'";
+		}
+
+		if (sortBy.equals("login")){
+			hql+=" ORDER BY login";
+			if (sortOrder.equals("ASC")||sortOrder.equals("DESC")){
+				hql += " " + sortOrder;
+			}
+		}
+
+
+		Query query = connector.getSession().createQuery(hql);
+		return query.list();
 	}
 
 	public Participant findByLogin(String login) {
