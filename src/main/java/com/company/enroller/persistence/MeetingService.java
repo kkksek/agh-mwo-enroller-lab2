@@ -28,6 +28,9 @@ public class MeetingService {
 	public Meeting findById(long id) {
 		return this.session.get(Meeting.class, id);
 	}
+	public Meeting findByTitle(String title) {
+		return this.session.get(Meeting.class, title);
+	}
 
 	public Collection<Meeting> findMeetings(String title, String description, Participant participant, String sortMode) {
 		String hql = "FROM Meeting as meeting WHERE title LIKE :title AND description LIKE :description ";
@@ -53,6 +56,20 @@ public class MeetingService {
 
 	public void add(Meeting meeting) {
 		Transaction transaction = this.session.beginTransaction();
+		this.session.save(meeting);
+		transaction.commit();
+	}
+
+	public void addParticipant(Meeting meeting, Participant participant) {
+		Transaction transaction = this.session.beginTransaction();
+		meeting.addParticipant(participant);
+		this.session.save(meeting);
+		transaction.commit();
+	}
+
+	public void removeParticipant(Meeting meeting, Participant participant) {
+		Transaction transaction = this.session.beginTransaction();
+		meeting.removeParticipant(participant);
 		this.session.save(meeting);
 		transaction.commit();
 	}
